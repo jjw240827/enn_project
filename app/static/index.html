@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e6f8f0">
+<meta name="description" content="형광펜으로 표시한 영어 단어를 사진 한 장으로 찾아 뜻과 예문까지 알려주는 enn">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236fdcae'/%3E%3Cstop offset='1' stop-color='%230e9f9a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Crect x='14' y='19' width='36' height='7' rx='3.5' fill='white' opacity='.55'/%3E%3Crect x='14' y='31' width='36' height='9' rx='4.5' fill='white'/%3E%3Crect x='14' y='45' width='22' height='7' rx='3.5' fill='white' opacity='.55'/%3E%3C/svg%3E">
+<title>enn · 형광펜 단어 사전</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --g-50:  #f3fcf8;
+    --g-100: #e3f8ee;
+    --g-200: #c8f0dd;
+    --g-300: #9fe3c4;
+    --g-400: #6fd4aa;
+    --t-500: #21b7a0;
+    --t-600: #0f9d8f;
+    --t-700: #0b7f77;
+    --t-800: #0a635e;
+    --ink:   #0e2e2b;
+    --muted: #55746f;
+    --line:  #d5ece3;
+    --card:  #ffffff;
+    --danger: #c2410c;
+    --brand-grad: linear-gradient(135deg, #16ab93 0%, #0b8a86 100%);
+    --soft-grad: linear-gradient(135deg, #e3f8ee 0%, #d2f3ee 100%);
+    --shadow-sm: 0 1px 2px rgba(14, 76, 66, .06), 0 2px 8px rgba(14, 76, 66, .05);
+    --shadow-md: 0 4px 12px rgba(14, 76, 66, .08), 0 12px 32px rgba(14, 76, 66, .07);
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 420px at 85% -120px, #c9f2e0 0%, rgba(201,242,224,0) 70%),
+      radial-gradient(700px 380px at -10% 0, #cdf1ec 0%, rgba(205,241,236,0) 70%),
+      #f6fdfa;
+    background-attachment: fixed;
+    min-height: 100vh;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  }
+  button { font-family: inherit; touch-action: manipulation; }
+
+  /* ── 상단바 ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    background: rgba(246, 253, 250, .78);
+    border-bottom: 1px solid rgba(213, 236, 227, .8);
+    padding-top: env(safe-area-inset-top);
+  }
+  .topbar-inner {
+    max-width: 760px; margin: 0 auto; padding: 12px 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo { width: 30px; height: 30px; flex-shrink: 0; }
+  .brand { font-weight: 800; font-size: 20px; letter-spacing: -0.02em; color: var(--t-800); }
+  .brand small { font-weight: 500; font-size: 12px; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  .working .hero { display: none; }
+  .working .result-head { margin-top: 22px; }
+
+  /* ── 히어로 ── */
+  .hero { padding: 36px 0 22px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--g-100); color: var(--t-700);
+    border: 1px solid var(--g-200);
+    font-size: 12.5px; font-weight: 700; padding: 5px 11px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(27px, 6.6vw, 38px);
+    line-height: 1.22; letter-spacing: -0.03em; font-weight: 800;
+    word-break: keep-all;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(180deg, transparent 58%, var(--g-300) 58%, var(--g-300) 92%, transparent 92%);
+    padding: 0 3px;
+  }
+  .hero p { margin: 0; color: var(--muted); font-size: 15.5px; word-break: keep-all; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0 6px; padding: 0; list-style: none; }
+  .steps li {
+    background: rgba(255,255,255,.72); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 12px 12px;
+    font-size: 13px; color: var(--muted); line-height: 1.4; word-break: keep-all;
+  }
+  .steps b { display: block; color: var(--ink); font-size: 13.5px; margin-bottom: 2px; }
+  .steps .n {
+    display: inline-flex; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--brand-grad); color: #fff; font-size: 11.5px; font-weight: 700;
+    align-items: center; justify-content: center; margin-bottom: 8px;
+  }
+
+  /* ── 카드 공통 ── */
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+  }
+  section { margin-top: 18px; }
+
+  /* ── 업로드 ── */
+  .upload { padding: 18px; }
+  .dropzone {
+    border: 2px dashed var(--g-300); border-radius: 14px;
+    background: var(--g-50);
+    padding: 30px 18px 24px; text-align: center;
+    transition: background .15s, border-color .15s;
+  }
+  .dropzone.drag { background: var(--g-100); border-color: var(--t-500); }
+  .dz-icon {
+    width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 16px;
+    background: var(--soft-grad); display: flex; align-items: center; justify-content: center;
+    color: var(--t-700);
+  }
+  .dz-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .dz-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; word-break: keep-all; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 20px; border-radius: 14px; border: 0;
+    font-size: 15.5px; font-weight: 700; cursor: pointer;
+    transition: transform .08s ease, box-shadow .15s, background .15s, opacity .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn svg { flex-shrink: 0; }
+  .btn-primary { background: var(--brand-grad); color: #fff; box-shadow: 0 6px 16px rgba(11, 138, 134, .28); }
+  .btn-primary:hover { box-shadow: 0 8px 20px rgba(11, 138, 134, .34); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+  .btn-soft { background: var(--g-100); color: var(--t-800); border: 1px solid var(--g-200); }
+  .btn-soft:hover { background: var(--g-200); }
+  .btn-ghost { background: transparent; color: var(--muted); }
+  .btn-ghost:hover { color: var(--t-700); }
+  .btn-block { width: 100%; }
+  input[type=file] { display: none; }
+
+  .picked { display: none; }
+  .picked.active { display: block; }
+  .picked-row { display: flex; gap: 14px; align-items: center; }
+  .thumb {
+    width: 84px; height: 84px; border-radius: 12px; object-fit: cover; flex-shrink: 0;
+    border: 1px solid var(--line); background: var(--g-50);
+  }
+  .picked-meta { min-width: 0; flex: 1; }
+  .picked-name { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .picked-size { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .picked-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .picked-actions .btn-primary { flex: 1; }
+
+  /* ── 진행 상태 ── */
+  .progress { display: none; padding: 20px; }
+  .progress.active { display: block; }
+  .prog-steps { display: flex; flex-direction: column; gap: 14px; }
+  .prog-step { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--muted); }
+  .prog-step .dot {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid var(--line); display: flex; align-items: center; justify-content: center;
+    background: #fff; color: #fff;
+  }
+  .prog-step.active { color: var(--ink); font-weight: 700; }
+  .prog-step.active .dot { border-color: var(--t-500); border-top-color: transparent; animation: spin .8s linear infinite; }
+  .prog-step.done { color: var(--t-700); }
+  .prog-step.done .dot { background: var(--brand-grad); border-color: transparent; }
+  .prog-hint { margin: 16px 0 0; font-size: 13px; color: var(--muted); background: var(--g-50); border-radius: 10px; padding: 10px 12px; display: none; word-break: keep-all; }
+  .prog-hint.show { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── 에러 ── */
+  .error {
+    display: none; margin-top: 14px; padding: 12px 14px; border-radius: 12px;
+    background: #fff4ee; border: 1px solid #fbd5c0; color: var(--danger);
+    font-size: 14px; word-break: keep-all;
+  }
+  .error.active { display: block; }
+
+  /* ── 결과 ── */
+  .result { display: none; }
+  .result.active { display: block; animation: rise .35s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .result-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 30px 0 12px; }
+  .result-head h2 { margin: 0; font-size: 21px; letter-spacing: -0.02em; word-break: keep-all; }
+  .result-head h2 span { color: var(--t-600); }
+  .result-head .hint { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+
+  .photo { padding: 10px; }
+  .photo-stage { position: relative; border-radius: 12px; overflow: hidden; background: var(--g-50); line-height: 0; }
+  .photo-stage img { width: 100%; height: auto; display: block; }
+  .box {
+    position: absolute; border: 2.5px solid var(--t-600); border-radius: 6px;
+    background: rgba(33, 183, 160, .14);
+    box-shadow: 0 0 0 1.5px rgba(255,255,255,.9), 0 2px 8px rgba(11,127,119,.25);
+    cursor: pointer; transition: background .15s, box-shadow .15s;
+  }
+  .box.on { background: rgba(33, 183, 160, .32); box-shadow: 0 0 0 1.5px #fff, 0 0 0 5px rgba(33,183,160,.35); }
+  .pin {
+    position: absolute; left: -2px; top: -13px; transform: translateY(-50%);
+    min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px;
+    background: var(--brand-grad); color: #fff; font-size: 12px; font-weight: 700; line-height: 22px;
+    text-align: center; box-shadow: 0 0 0 2px #fff; pointer-events: none;
+  }
+
+  .cards { display: grid; gap: 12px; margin-top: 14px; }
+  .word-card { padding: 16px 16px 14px; scroll-margin-top: 76px; transition: box-shadow .2s, border-color .2s; }
+  .word-card.on { border-color: var(--t-500); box-shadow: 0 0 0 3px rgba(33,183,160,.22), var(--shadow-md); }
+  .wc-head { display: flex; align-items: center; gap: 10px; }
+  .badge {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--brand-grad); color: #fff; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wc-title { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; word-break: break-word; min-width: 0; flex: 1; }
+  .hl-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1.5px solid rgba(0,0,0,.12); }
+
+  .entry { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+  .wc-head + .entry { border-top: 0; padding-top: 0; }
+  .entry-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .lemma { font-weight: 700; font-size: 15px; }
+  .phonetic { color: var(--muted); font-size: 13.5px; }
+  .pos {
+    background: var(--g-100); color: var(--t-700); border: 1px solid var(--g-200);
+    font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+  }
+  .stem { font-size: 12px; color: var(--muted); }
+  .meaning { font-size: 15.5px; line-height: 1.55; word-break: keep-all; }
+  .meaning-en { margin-top: 2px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .example-ko { margin-top: 4px; font-size: 13px; color: var(--muted); word-break: keep-all; }
+  .example {
+    margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--g-400);
+    background: var(--g-50); border-radius: 0 10px 10px 0;
+    font-size: 14px; color: #2c4a46; line-height: 1.55;
+  }
+  .example .lab { display: block; font-size: 11.5px; font-weight: 700; color: var(--t-700); margin-bottom: 2px; letter-spacing: .02em; }
+  .example mark { background: linear-gradient(180deg, transparent 55%, var(--g-300) 55%); color: inherit; font-weight: 700; padding: 0; }
+  .alts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+  .alts-lab { font-size: 12.5px; color: var(--muted); margin-right: 2px; }
+  .alt {
+    min-height: 36px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--g-300); background: #fff; color: var(--t-800);
+    font-size: 14px; font-weight: 700; transition: background .15s;
+  }
+  .alt:hover { background: var(--g-100); }
+  .alt:disabled { opacity: .6; cursor: wait; }
+  .missing { color: var(--muted); font-size: 14px; background: #f5f8f7; border-radius: 10px; padding: 10px 12px; }
+
+  .empty { text-align: center; padding: 34px 22px; }
+  .empty .em-icon { width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 16px; background: var(--soft-grad); display: flex; align-items: center; justify-content: center; color: var(--t-700); }
+  .empty h3 { margin: 0 0 6px; font-size: 17px; }
+  .empty p { margin: 0 auto; color: var(--muted); font-size: 14px; max-width: 360px; word-break: keep-all; }
+
+  .again { margin-top: 20px; text-align: center; }
+  footer { margin-top: 44px; text-align: center; color: #86a39d; font-size: 12.5px; }
+
+  /* ── 상단 탭 ── */
+  .nav { margin-left: auto; display: flex; gap: 4px; padding: 3px; background: var(--g-100); border: 1px solid var(--g-200); border-radius: 999px; }
+  .tab {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 14px;
+    border-radius: 999px; font-size: 14px; font-weight: 700; color: var(--muted); text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+  .tab:hover { color: var(--t-700); }
+  .tab[aria-current="page"] { background: #fff; color: var(--t-800); box-shadow: var(--shadow-sm); }
+  .tab-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--brand-grad); color: #fff; font-size: 11.5px; line-height: 20px; text-align: center; }
+  .tab-count:empty { display: none; }
+  body[data-view="vocab"] #viewFind, body:not([data-view="vocab"]) #viewVocab { display: none; }
+
+  /* ── 단어 체크(단어장에 추가할지 선택) ── */
+  .check { position: relative; display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 2px 0 6px; cursor: pointer; user-select: none; flex-shrink: 0; }
+  .check input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .cbox {
+    width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--g-300); background: #fff; color: #fff;
+    display: flex; align-items: center; justify-content: center; transition: background .15s, border-color .15s;
+  }
+  .cbox svg { opacity: 0; transform: scale(.6); transition: opacity .15s, transform .15s; }
+  .check input:checked + .cbox, .check input:indeterminate + .cbox { background: var(--brand-grad); border-color: transparent; }
+  .check input:checked + .cbox svg, .check input:indeterminate + .cbox svg { opacity: 1; transform: none; }
+  .check input:indeterminate + .cbox .tick { display: none; }
+  .check input:not(:indeterminate) + .cbox .dash { display: none; }
+  .check input:focus-visible + .cbox { outline: 3px solid rgba(33,183,160,.4); outline-offset: 2px; }
+  .ctxt { font-size: 13px; font-weight: 700; color: var(--t-700); }
+  .word-card.off .wc-title, .word-card.off > .entry, .entry.off .entry-body { opacity: .42; }
+  .word-card .wc-title, .word-card > .entry, .entry .entry-body { transition: opacity .15s; }
+  .entry.with-check { display: flex; align-items: flex-start; gap: 6px; }
+  .entry-body { flex: 1; min-width: 0; }
+
+  .addbar {
+    position: sticky; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 15; margin-top: 16px;
+    display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 10px;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--g-200); border-radius: 18px; box-shadow: var(--shadow-md);
+  }
+  .addbar .btn { flex: 1; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom)); z-index: 40;
+    display: flex; align-items: center; gap: 14px; max-width: calc(100vw - 32px);
+    padding: 12px 16px; border-radius: 14px; background: #0e2e2b; color: #fff; font-size: 14px; font-weight: 600;
+    box-shadow: var(--shadow-md); opacity: 0; transform: translate(-50%, 12px); pointer-events: none;
+    transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .toast button { background: none; border: 0; color: var(--g-300); font-size: 14px; font-weight: 800; cursor: pointer; padding: 4px 0; white-space: nowrap; }
+
+  /* ── 단어장 ── */
+  .search { position: relative; margin-bottom: 14px; }
+  .search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  .search input {
+    width: 100%; min-height: 48px; padding: 0 14px 0 42px; border: 1px solid var(--line); border-radius: 14px;
+    background: #fff; font: inherit; font-size: 16px; color: var(--ink);
+  }
+  .search input:focus { outline: 3px solid rgba(33,183,160,.3); border-color: var(--t-500); }
+  .vlist { display: grid; gap: 12px; }
+  .vcard { padding: 16px 12px 16px 16px; }
+  .v-top { display: flex; align-items: flex-start; gap: 6px; }
+  .v-main { flex: 1; min-width: 0; padding-top: 2px; }
+  .v-word { font-size: 21px; font-weight: 800; letter-spacing: -0.01em; word-break: break-word; }
+  .v-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+  .vcard .meaning { margin-top: 10px; padding-right: 4px; }
+  .vcard .example { margin-right: 4px; }
+  .icon-btn {
+    width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; border: 1px solid var(--g-200);
+    background: var(--g-100); color: var(--t-700); cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    transition: background .15s, color .15s;
+  }
+  .icon-btn:hover { background: var(--g-200); }
+  .icon-btn.speaking { background: var(--brand-grad); color: #fff; border-color: transparent; animation: pulse 1s ease-in-out infinite; }
+  .icon-btn.del { background: transparent; border-color: transparent; color: #93aaa5; }
+  .icon-btn.del:hover { color: var(--danger); background: #fff4ee; }
+  .icon-btn.del.confirm { width: auto; padding: 0 12px; background: var(--danger); color: #fff; font-size: 13px; font-weight: 700; }
+  .mini { width: 30px; height: 30px; border-radius: 9px; vertical-align: middle; margin-left: 6px; }
+  .example .lab { display: flex; align-items: center; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(33,183,160,.22); } }
+  .no-tts .speak-ctl { display: none; }
+  .tts-note { display: none; margin: 0 0 12px; font-size: 13px; color: var(--muted); background: #f5f8f7; border-radius: 10px; padding: 10px 12px; }
+  .no-tts .tts-note { display: block; }
+
+  @media (max-width: 520px) {
+    .brand small { display: none; }
+    .tab { padding: 0 12px; }
+    .wrap, .topbar-inner { padding-left: 16px; padding-right: 16px; }
+    .hero { padding-top: 26px; }
+    .steps { grid-template-columns: 1fr; gap: 8px; }
+    .steps li { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+    .steps .n { margin: 0; flex-shrink: 0; }
+    .steps b { display: inline; margin: 0 6px 0 0; }
+    .btn-row .btn { flex: 1 1 100%; }
+    .dropzone { padding: 24px 14px 18px; }
+    .desk-only { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fdcae"/><stop offset="1" stop-color="#0e9f9a"/></linearGradient></defs>
+      <rect width="64" height="64" rx="16" fill="url(#lg)"/>
+      <rect x="14" y="19" width="36" height="7" rx="3.5" fill="#fff" opacity=".55"/>
+      <rect x="14" y="31" width="36" height="9" rx="4.5" fill="#fff"/>
+      <rect x="14" y="45" width="22" height="7" rx="3.5" fill="#fff" opacity=".55"/>
+    </svg>
+    <div class="brand">enn<small>형광펜 단어 사전</small></div>
+    <nav class="nav" aria-label="화면 이동">
+      <a class="tab" id="tabFind" href="#/">단어 찾기</a>
+      <a class="tab" id="tabVocab" href="#/vocab">단어장<span class="tab-count" id="vocabCount"></span></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+<div id="viewFind">
+  <div class="hero">
+    <span class="eyebrow">✦ 사진 한 장이면 끝</span>
+    <h1>형광펜 친 단어,<br><em>뜻까지 한 번에</em></h1>
+    <p>교재나 지문을 찍어 올리면 형광펜으로 표시한 영어 단어를 찾아 뜻과 예문을 정리해 드려요.</p>
+    <ol class="steps">
+      <li><span class="n">1</span><span><b>촬영</b>형광펜 친 페이지를 찍어요</span></li>
+      <li><span class="n">2</span><span><b>인식</b>표시한 단어를 자동으로 찾아요</span></li>
+      <li><span class="n">3</span><span><b>학습</b>뜻과 예문을 바로 확인해요</span></li>
+    </ol>
+  </div>
+
+  <section class="card upload" id="uploadCard">
+    <div class="dropzone" id="dropzone">
+      <div class="dz-icon" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="12.5" r="3.5"/></svg>
+      </div>
+      <div class="dz-title">단어가 표시된 사진을 올려주세요</div>
+      <div class="dz-sub"><span class="desk-only">사진을 여기로 끌어다 놓거나 </span>밝은 곳에서 글자가 선명하게 나오도록 찍으면 더 정확해요</div>
+      <div class="btn-row">
+        <button type="button" class="btn btn-primary" id="cameraBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L8 6H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="12.5" r="3.5"/></svg>
+          카메라로 촬영
+        </button>
+        <button type="button" class="btn btn-soft" id="galleryBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.8"/><path d="m21 15-4.5-4.5L6 21"/></svg>
+          앨범에서 선택
+        </button>
+      </div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment">
+      <input type="file" id="galleryInput" accept="image/*">
+    </div>
+
+    <div class="picked" id="picked">
+      <div class="picked-row">
+        <img class="thumb" id="thumb" alt="선택한 사진 미리보기">
+        <div class="picked-meta">
+          <div class="picked-name" id="pickedName"></div>
+          <div class="picked-size" id="pickedSize"></div>
+        </div>
+      </div>
+      <div class="picked-actions">
+        <button type="button" class="btn btn-ghost" id="changeBtn">다시 선택</button>
+        <button type="button" class="btn btn-primary" id="analyzeBtn">단어 찾기</button>
+      </div>
+    </div>
+
+    <div class="error" id="errorBox" role="alert"></div>
+  </section>
+
+  <section class="card progress" id="progress" aria-live="polite">
+    <div class="prog-steps">
+      <div class="prog-step" id="ps1"><span class="dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>사진 업로드</div>
+      <div class="prog-step" id="ps2"><span class="dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>형광펜 단어 인식 · 뜻 찾는 중</div>
+    </div>
+    <p class="prog-hint" id="progHint">처음 검색하는 단어는 사전 조회에 시간이 조금 걸려요. 잠시만 기다려 주세요.</p>
+  </section>
+
+  <div class="result" id="result">
+    <div class="result-head">
+      <h2 id="resultTitle"></h2>
+      <span class="hint" id="resultHint">번호를 눌러 확인하세요</span>
+    </div>
+    <div class="card photo" id="photoCard"><div class="photo-stage" id="stage"></div></div>
+    <div class="cards" id="cards"></div>
+    <div class="addbar" id="addBar">
+      <label class="check" id="selAllWrap">
+        <input type="checkbox" id="selAll" checked>
+        <span class="cbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path class="tick" d="m5 12.5 4.5 4.5L19 7.5"/><path class="dash" d="M6 12h12"/></svg></span>
+        <span class="ctxt" id="selAllText">전체</span>
+      </label>
+      <button type="button" class="btn btn-primary" id="addBtn">단어장에 추가</button>
+    </div>
+    <div class="again"><button type="button" class="btn btn-soft" id="againBtn">다른 사진 분석하기</button></div>
+  </div>
+</div>
+
+<div id="viewVocab">
+  <div class="result-head">
+    <h2 id="vocabTitle">내 단어장</h2>
+    <span class="hint" id="vocabHint"></span>
+  </div>
+  <p class="tts-note">이 브라우저는 음성 재생을 지원하지 않아 발음 듣기를 쓸 수 없어요.</p>
+  <div class="search" id="vocabSearch" hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input type="search" id="vocabQuery" placeholder="단어 또는 뜻으로 검색" aria-label="단어장 검색" autocomplete="off">
+  </div>
+  <div class="vlist" id="vocabList"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastAction" hidden></button></div>
+
+  <footer>© enn · 영어 학습을 더 가볍게</footer>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const el = {
+  dropzone: $('dropzone'), picked: $('picked'), thumb: $('thumb'),
+  pickedName: $('pickedName'), pickedSize: $('pickedSize'),
+  cameraBtn: $('cameraBtn'), galleryBtn: $('galleryBtn'),
+  cameraInput: $('cameraInput'), galleryInput: $('galleryInput'),
+  changeBtn: $('changeBtn'), analyzeBtn: $('analyzeBtn'), againBtn: $('againBtn'),
+  uploadCard: $('uploadCard'), progress: $('progress'), progHint: $('progHint'),
+  ps1: $('ps1'), ps2: $('ps2'), errorBox: $('errorBox'),
+  result: $('result'), resultTitle: $('resultTitle'), resultHint: $('resultHint'),
+  stage: $('stage'), photoCard: $('photoCard'), cards: $('cards'),
+  addBar: $('addBar'), addBtn: $('addBtn'), selAll: $('selAll'), selAllText: $('selAllText'),
+  vocabCount: $('vocabCount'), vocabTitle: $('vocabTitle'), vocabHint: $('vocabHint'),
+  vocabSearch: $('vocabSearch'), vocabQuery: $('vocabQuery'), vocabList: $('vocabList'),
+  toast: $('toast'), toastMsg: $('toastMsg'), toastAction: $('toastAction'),
+};
+
+// 폰 카메라 원본(수천 px)은 업로드/OCR이 느리고 튜닝된 해상도와도 달라서 긴 변 기준으로 줄임
+const MAX_SIDE = 1600;
+const HIGHLIGHT_DOT = { yellow: '#f2d84b', green: '#5cc07b', orange: '#f0994a', pink: '#ea6fa5' };
+
+let selectedFile = null;
+let thumbUrl = null;
+let hintTimer = null;
+
+el.cameraBtn.onclick = () => el.cameraInput.click();
+el.galleryBtn.onclick = () => el.galleryInput.click();
+el.cameraInput.onchange = () => pick(el.cameraInput.files[0]);
+el.galleryInput.onchange = () => pick(el.galleryInput.files[0]);
+el.changeBtn.onclick = resetAll;
+el.againBtn.onclick = () => { resetAll(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+el.analyzeBtn.onclick = analyze;
+
+['dragenter', 'dragover'].forEach(t => el.dropzone.addEventListener(t, e => { e.preventDefault(); el.dropzone.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(t => el.dropzone.addEventListener(t, e => { e.preventDefault(); el.dropzone.classList.remove('drag'); }));
+el.dropzone.addEventListener('drop', e => pick(e.dataTransfer.files[0]));
+
+function pick(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { showError('이미지 파일만 올릴 수 있어요.'); return; }
+  hideError();
+  selectedFile = file;
+  if (thumbUrl) URL.revokeObjectURL(thumbUrl);
+  thumbUrl = URL.createObjectURL(file);
+  el.thumb.src = thumbUrl;
+  el.pickedName.textContent = file.name || '촬영한 사진';
+  el.pickedSize.textContent = formatSize(file.size);
+  el.dropzone.style.display = 'none';
+  el.picked.classList.add('active');
+  el.result.classList.remove('active');
+}
+
+function resetAll() {
+  selectedFile = null;
+  el.cameraInput.value = ''; el.galleryInput.value = '';
+  el.picked.classList.remove('active');
+  el.dropzone.style.display = '';
+  el.result.classList.remove('active');
+  el.progress.classList.remove('active');
+  el.uploadCard.style.display = '';
+  document.body.classList.remove('working');
+  stopHint(); hideError();
+}
+
+function formatSize(bytes) {
+  return bytes > 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(bytes / 1024)) + ' KB';
+}
+
+function showError(msg) { el.errorBox.textContent = msg; el.errorBox.classList.add('active'); }
+function hideError() { el.errorBox.classList.remove('active'); el.errorBox.textContent = ''; }
+
+function setStep(n) {
+  // n: 1 = 업로드 진행 중, 2 = 분석 진행 중
+  el.ps1.className = 'prog-step ' + (n === 1 ? 'active' : 'done');
+  el.ps2.className = 'prog-step ' + (n === 2 ? 'active' : '');
+}
+function startHint() { stopHint(); hintTimer = setTimeout(() => el.progHint.classList.add('show'), 5000); }
+function stopHint() { clearTimeout(hintTimer); el.progHint.classList.remove('show'); }
+
+async function analyze() {
+  if (!selectedFile) return;
+  hideError();
+  el.uploadCard.style.display = 'none';
+  el.progress.classList.add('active');
+  el.result.classList.remove('active');
+  document.body.classList.add('working');
+  setStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  try {
+    const blob = await prepareImage(selectedFile);
+    const fileId = await upload(blob);
+    setStep(2); startHint();
+    const data = await getJson(`/analyze/${fileId}`, '분석에 실패했어요.');
+    stopHint();
+    el.progress.classList.remove('active');
+    await render(fileId, data.marked_words);
+  } catch (err) {
+    stopHint();
+    el.progress.classList.remove('active');
+    el.uploadCard.style.display = '';
+    document.body.classList.remove('working');
+    showError(err.message || '알 수 없는 오류가 발생했어요. 잠시 후 다시 시도해 주세요.');
+  }
+}
+
+// 큰 사진만 리사이즈. 브라우저가 EXIF 회전을 반영해 그리므로 세로/가로 방향도 함께 정리됨.
+// 디코딩 실패(예: 데스크톱의 HEIC) 시엔 원본 그대로 서버에 보냄.
+async function prepareImage(file) {
+  try {
+    const bmp = await createImageBitmap(file);
+    const longSide = Math.max(bmp.width, bmp.height);
+    const okType = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (longSide <= MAX_SIDE && okType) { bmp.close?.(); return file; }
+    const scale = Math.min(1, MAX_SIDE / longSide);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    bmp.close?.();
+    // 압축이 강하면 형광펜 검출(밀도 임계값 경계 케이스)이 달라지는 걸 실측했으므로 높은 품질 유지
+    const out = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
+    return out || file;
+  } catch {
+    return file;
+  }
+}
+
+async function upload(blob) {
+  const form = new FormData();
+  form.append('file', blob, 'photo.jpg');
+  const res = await fetch('/upload', { method: 'POST', body: form });
+  if (!res.ok) throw new Error(await errorText(res, '사진을 업로드하지 못했어요.'));
+  return (await res.json()).file_id;
+}
+
+async function getJson(url, fallback) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(await errorText(res, fallback));
+  return res.json();
+}
+
+async function errorText(res, fallback) {
+  try { const b = await res.json(); if (typeof b.detail === 'string') return b.detail; } catch {}
+  return `${fallback} (${res.status})`;
+}
+
+/* ── 결과 렌더링 ── */
+// 이번 분석에서 찾은 단어들. 기본은 전부 체크(=단어장 추가 대상), 체크를 풀면 그 단어만 빠짐.
+// 손글씨 후보 칩으로 단어가 바뀌면 slot.word 도 바뀌므로 "지금 카드에 보이는 단어"가 추가됨.
+let slots = [];
+
+async function render(fileId, marks) {
+  el.cards.innerHTML = '';
+  el.stage.innerHTML = '';
+  slots = [];
+
+  const total = marks.reduce((n, m) => n + m.words.length, 0);
+  el.addBar.style.display = marks.length ? '' : 'none';
+  if (!marks.length) {
+    el.resultTitle.textContent = '표시된 단어를 찾지 못했어요';
+    el.resultHint.textContent = '';
+    el.photoCard.style.display = 'none';
+    el.cards.innerHTML = `
+      <div class="card empty">
+        <div class="em-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div>
+        <h3>형광펜 표시가 보이지 않아요</h3>
+        <p>밝은 곳에서 형광펜 칠한 부분이 또렷하게 보이도록, 페이지가 화면에 꽉 차게 다시 찍어 보세요.</p>
+      </div>`;
+    showResult();
+    return;
+  }
+
+  el.photoCard.style.display = '';
+  // 형광펜 하나가 여러 단어("test out")를 덮을 수 있어서 표시 수와 단어 수가 다를 때만 둘 다 밝힘
+  el.resultTitle.innerHTML = total === marks.length
+    ? `단어 <span>${total}개</span>를 찾았어요`
+    : `표시 <span>${marks.length}곳</span> · 단어 <span>${total}개</span>를 찾았어요`;
+  el.resultHint.textContent = '번호를 눌러 확인하세요';
+
+  const img = new Image();
+  img.alt = '분석한 사진';
+  await new Promise((resolve) => {
+    img.onload = resolve; img.onerror = resolve;
+    img.src = `/image/${fileId}`;   // 서버가 회전 보정한 이미지 (bbox 좌표계와 동일)
+  });
+  el.stage.appendChild(img);
+
+  const boxes = [], cards = [];
+  marks.forEach((mark, i) => {
+    const [x, y, w, h] = mark.bbox;
+    const box = document.createElement('div');
+    box.className = 'box';
+    box.style.cssText = `left:${x / img.naturalWidth * 100}%;top:${y / img.naturalHeight * 100}%;` +
+      `width:${w / img.naturalWidth * 100}%;height:${h / img.naturalHeight * 100}%;`;
+    box.innerHTML = `<span class="pin">${i + 1}</span>`;
+    el.stage.appendChild(box);
+    boxes.push(box);
+
+    const card = buildCard(mark, i);
+    el.cards.appendChild(card);
+    cards.push(card);
+
+    box.onclick = () => { activate(i); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+    card.onclick = () => activate(i);
+  });
+
+  function activate(idx) {
+    boxes.forEach((b, j) => b.classList.toggle('on', j === idx));
+    cards.forEach((c, j) => c.classList.toggle('on', j === idx));
+  }
+
+  addedDone = false;
+  updateAddBar();
+  showResult();
+}
+
+function showResult() {
+  el.result.classList.add('active');
+  requestAnimationFrame(() => el.result.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+function buildCard(mark, idx) {
+  const card = document.createElement('article');
+  card.className = 'card word-card';
+  const title = mark.words.map(w => w.text.replace(/^[^A-Za-z']+|[^A-Za-z']+$/g, '')).join(' ');
+  const dot = HIGHLIGHT_DOT[mark.color];
+
+  let html = `<div class="wc-head">
+      <span class="badge">${idx + 1}</span>
+      <span class="wc-title">${esc(title)}</span>
+      ${dot ? `<span class="hl-dot" style="background:${dot}" title="${esc(mark.color)} 형광펜"></span>` : ''}
+    </div>`;
+
+  card.innerHTML = html;
+  const head = card.querySelector('.wc-head');
+  const titleEl = card.querySelector('.wc-title');
+  const multi = mark.words.length > 1;
+
+  mark.words.forEach((word) => {
+    const slot = { word, checked: true };
+    slots.push(slot);
+    const holder = document.createElement('div');
+    holder.className = 'entry';
+    card.appendChild(holder);
+
+    // 한 표시에 단어가 여러 개면 단어마다, 하나면 카드 머리에 체크박스를 둠
+    let body = holder;
+    if (multi) {
+      holder.classList.add('with-check');
+      body = document.createElement('div');
+      body.className = 'entry-body';
+      holder.appendChild(body);
+      holder.appendChild(makeCheck(slot, holder));
+    } else {
+      head.appendChild(makeCheck(slot, card));
+    }
+    fillEntry(body, word, multi, (next) => { slot.word = next; if (!multi) titleEl.textContent = next.text; });
+  });
+  return card;
+}
+
+const CHECK_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path class="tick" d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+
+function makeCheck(slot, target) {
+  const label = document.createElement('label');
+  label.className = 'check';
+  label.title = '체크하면 단어장에 추가돼요';
+  label.innerHTML = `<input type="checkbox" checked aria-label="단어장에 추가"><span class="cbox">${CHECK_SVG}</span><span class="ctxt">추가</span>`;
+  const input = label.querySelector('input');
+  slot.input = input; slot.target = target;
+  input.onchange = () => setChecked(slot, input.checked);
+  label.addEventListener('click', (e) => e.stopPropagation());  // 카드 선택(activate)과 분리
+  return label;
+}
+
+function setChecked(slot, value) {
+  slot.checked = value;
+  slot.input.checked = value;
+  slot.target.classList.toggle('off', !value);
+  addedDone = false;
+  updateAddBar();
+}
+
+/* ── 단어장 추가 ── */
+let addedDone = false;
+
+function updateAddBar() {
+  const n = slots.filter(s => s.checked).length;
+  el.selAll.checked = n === slots.length && n > 0;
+  el.selAll.indeterminate = n > 0 && n < slots.length;
+  el.selAllText.textContent = `단어 ${n}/${slots.length}`;
+  if (addedDone) {
+    el.addBtn.disabled = false;
+    el.addBtn.textContent = '추가 완료 · 단어장 보기';
+  } else {
+    el.addBtn.disabled = n === 0;
+    el.addBtn.textContent = n ? `단어장에 추가 (${n})` : '추가할 단어를 선택하세요';
+  }
+}
+
+el.selAll.onchange = () => {
+  const v = el.selAll.checked;   // 일부만 선택된 상태에서 누르면 전체 선택
+  slots.forEach(s => setChecked(s, v));
+};
+
+el.addBtn.onclick = async () => {
+  if (addedDone) { location.hash = '#/vocab'; return; }
+  const words = slots.filter(s => s.checked).map(vocabPayload).filter(w => w.word);
+  if (!words.length) return;
+  el.addBtn.disabled = true; el.addBtn.textContent = '추가하는 중…';
+  try {
+    const res = await fetch('/vocab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ words }) });
+    if (!res.ok) throw new Error(await errorText(res, '단어장에 추가하지 못했어요.'));
+    const r = await res.json();
+    setVocabCount(r.total);
+    addedDone = true;
+    toast(!r.added ? '선택한 단어가 이미 모두 단어장에 있어요'
+      : r.duplicates ? `${r.added}개 추가 · ${r.duplicates}개는 이미 단어장에 있어요`
+      : `${r.added}개를 단어장에 추가했어요`,
+      '단어장 보기', () => { location.hash = '#/vocab'; });
+  } catch (err) {
+    toast(err.message || '단어장에 추가하지 못했어요. 잠시 후 다시 시도해 주세요.');
+  }
+  updateAddBar();
+};
+
+function cleanWord(text) { return text.replace(/^[^A-Za-z']+|[^A-Za-z']+$/g, ''); }
+
+function vocabPayload(slot) {
+  const w = slot.word, d = w.definition;
+  return {
+    word: cleanWord(w.text),
+    lemma: d && d.word || null,
+    phonetic: d && d.phonetic || null,
+    part_of_speech: d && d.part_of_speech || null,
+    definition: d && d.definition || null,
+    definition_en: d && d.definition_en || null,
+    example: w.example || null,
+    example_ko: w.example && d && d.example_ko || null,
+  };
+}
+
+let toastTimer = null;
+function toast(msg, actionLabel, action) {
+  el.toastMsg.textContent = msg;
+  el.toastAction.hidden = !actionLabel;
+  el.toastAction.textContent = actionLabel || '';
+  el.toastAction.onclick = () => { el.toast.classList.remove('show'); action && action(); };
+  el.toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.toast.classList.remove('show'), actionLabel ? 5000 : 3200);
+}
+
+function fillEntry(holder, word, multi, onChange) {
+  const { text, definition, example, alternatives } = word;
+  const clean = text.replace(/^[^A-Za-z']+|[^A-Za-z']+$/g, '');
+  let html = '';
+  if (!definition) {
+    html += `<div class="missing">"${esc(clean)}" 의 뜻을 찾지 못했어요.</div>`;
+  } else {
+    const lemma = definition.word || clean;
+    const stem = lemma.toLowerCase() !== clean.toLowerCase();
+    html += `<div class="entry-top">
+        ${multi ? `<span class="lemma">${esc(lemma)}</span>` : ''}
+        ${definition.phonetic ? `<span class="phonetic">${esc(definition.phonetic)}</span>` : ''}
+        ${definition.part_of_speech ? `<span class="pos">${esc(definition.part_of_speech)}</span>` : ''}
+        ${stem ? `<span class="stem">원형 · ${esc(lemma)}</span>` : ''}
+      </div>
+      <div class="meaning">${esc(definition.definition || '')}</div>
+      ${definition.definition_en ? `<div class="meaning-en">${esc(definition.definition_en)}</div>` : ''}`;
+  }
+  if (example) {
+    html += `<div class="example"><span class="lab">${word.from_photo ? '사진 속 문장' : '예문'}</span>${markWord(example, clean)}` +
+      `${definition && definition.example_ko ? `<div class="example-ko">${esc(definition.example_ko)}</div>` : ''}</div>`;
+  }
+  // 손글씨로 인식한 단어: 글자가 비슷한 단어를 후보로 제공해 한 번에 고칠 수 있게 함
+  if (alternatives && alternatives.length) {
+    html += `<div class="alts"><span class="alts-lab">손글씨로 읽었어요. 혹시 이 단어?</span>` +
+      alternatives.map(a => `<button type="button" class="alt" data-w="${esc(a)}">${esc(a)}</button>`).join('') + '</div>';
+  }
+  holder.innerHTML = html;
+
+  holder.querySelectorAll('.alt').forEach((btn) => {
+    btn.onclick = async (ev) => {
+      ev.stopPropagation();
+      const picked = btn.dataset.w;
+      btn.disabled = true; btn.textContent = '…';
+      let def = null;
+      try {
+        const res = await fetch('/dictionary/' + encodeURIComponent(picked));
+        if (res.ok) def = await res.json();
+      } catch {}
+      const next = {
+        text: picked, definition: def, example: def && def.example || null, from_photo: false,
+        alternatives: [text, ...alternatives.filter(a => a !== picked)].slice(0, 3),
+      };
+      fillEntry(holder, next, multi, onChange);
+      onChange(next);
+    };
+  });
+}
+
+/* ── 음성(TTS): 브라우저 내장 speechSynthesis 사용 → 서버/네트워크 불필요 ── */
+const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
+let enVoice = null;
+function pickVoice() {
+  if (!synth) return;
+  const voices = synth.getVoices();
+  enVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.toLowerCase().startsWith('en')) || null;
+}
+if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+else document.body.classList.add('no-tts');
+
+let speakingBtn = null;
+function speak(text, btn) {
+  if (!synth || !text) return;
+  const wasThis = speakingBtn === btn;
+  synth.cancel();
+  if (speakingBtn) speakingBtn.classList.remove('speaking');
+  speakingBtn = null;
+  if (wasThis) return;           // 재생 중인 버튼을 다시 누르면 정지
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  if (enVoice) u.voice = enVoice;
+  u.rate = 0.9;
+  const done = () => { btn.classList.remove('speaking'); if (speakingBtn === btn) speakingBtn = null; };
+  u.onend = done; u.onerror = done;
+  speakingBtn = btn;
+  btn.classList.add('speaking');
+  synth.speak(u);
+}
+
+const SPEAKER_SVG = (s) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>`;
+const TRASH_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>';
+
+/* ── 단어장 화면 ── */
+let vocabItems = [];
+
+function setVocabCount(n) { el.vocabCount.textContent = n ? String(n) : ''; }
+
+async function loadVocab() {
+  try {
+    const res = await fetch('/vocab');
+    if (!res.ok) throw new Error();
+    vocabItems = (await res.json()).words;
+    setVocabCount(vocabItems.length);
+    renderVocab();
+  } catch {
+    el.vocabHint.textContent = '';
+    el.vocabSearch.hidden = true;
+    el.vocabList.innerHTML = `<div class="card empty"><h3>단어장을 불러오지 못했어요</h3><p>잠시 후 다시 시도해 주세요.</p>
+      <div class="again"><button type="button" class="btn btn-soft" id="retryVocab">다시 불러오기</button></div></div>`;
+    $('retryVocab').onclick = loadVocab;
+  }
+}
+
+function renderVocab() {
+  speak.cancelAll();
+  const q = el.vocabQuery.value.trim().toLowerCase();
+  el.vocabHint.textContent = vocabItems.length ? `총 ${vocabItems.length}개` : '';
+  el.vocabSearch.hidden = !vocabItems.length;
+
+  if (!vocabItems.length) {
+    el.vocabList.innerHTML = `<div class="card empty">
+        <div class="em-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 8h6"/></svg></div>
+        <h3>아직 단어장이 비어 있어요</h3>
+        <p>사진에서 찾은 단어를 추가하면 여기에 모여요.</p>
+        <div class="again"><a class="btn btn-primary" href="#/" style="text-decoration:none">단어 찾으러 가기</a></div>
+      </div>`;
+    return;
+  }
+
+  const shown = q ? vocabItems.filter(i => [i.word, i.lemma, i.definition].some(f => f && f.toLowerCase().includes(q))) : vocabItems;
+  if (!shown.length) {
+    el.vocabList.innerHTML = `<div class="card empty"><h3>검색 결과가 없어요</h3><p>다른 단어로 검색해 보세요.</p></div>`;
+    return;
+  }
+  el.vocabList.innerHTML = '';
+  shown.forEach(item => el.vocabList.appendChild(buildVocabCard(item)));
+}
+
+function buildVocabCard(item) {
+  const card = document.createElement('article');
+  card.className = 'card vcard';
+  const stem = item.lemma && item.lemma.toLowerCase() !== item.word.toLowerCase();
+  card.innerHTML = `
+    <div class="v-top">
+      <div class="v-main">
+        <div class="v-word">${esc(item.word)}</div>
+        <div class="v-sub">
+          ${item.phonetic ? `<span class="phonetic">${esc(item.phonetic)}</span>` : ''}
+          ${item.part_of_speech ? `<span class="pos">${esc(item.part_of_speech)}</span>` : ''}
+          ${stem ? `<span class="stem">원형 · ${esc(item.lemma)}</span>` : ''}
+        </div>
+      </div>
+      <button type="button" class="icon-btn speak-ctl" data-act="say-word" aria-label="${esc(item.word)} 발음 듣기">${SPEAKER_SVG(22)}</button>
+      <button type="button" class="icon-btn del" data-act="del" aria-label="${esc(item.word)} 삭제">${TRASH_SVG}</button>
+    </div>
+    ${item.definition ? `<div class="meaning">${esc(item.definition)}</div>${item.definition_en ? `<div class="meaning-en">${esc(item.definition_en)}</div>` : ''}` : `<div class="missing" style="margin-top:10px">뜻을 찾지 못한 단어예요.</div>`}
+    ${item.example ? `<div class="example"><span class="lab">예문<button type="button" class="icon-btn mini speak-ctl" data-act="say-example" aria-label="예문 듣기">${SPEAKER_SVG(16)}</button></span>${markWord(item.example, item.word)}${item.example_ko ? `<div class="example-ko">${esc(item.example_ko)}</div>` : ''}</div>` : ''}`;
+
+  const del = card.querySelector('[data-act="del"]');
+  let armTimer = null;
+  card.querySelector('[data-act="say-word"]').onclick = (e) => speak(item.word, e.currentTarget);
+  const sayEx = card.querySelector('[data-act="say-example"]');
+  if (sayEx) sayEx.onclick = (e) => speak(item.example, e.currentTarget);
+
+  // 실수로 지우지 않도록 한 번 더 눌러야 삭제 (별도 확인 창 없이 버튼이 "삭제" 확인으로 바뀜)
+  del.onclick = async () => {
+    if (!del.classList.contains('confirm')) {
+      del.classList.add('confirm'); del.textContent = '삭제';
+      armTimer = setTimeout(() => { del.classList.remove('confirm'); del.innerHTML = TRASH_SVG; }, 3000);
+      return;
+    }
+    clearTimeout(armTimer);
+    del.disabled = true;
+    try {
+      const res = await fetch('/vocab/' + item.id, { method: 'DELETE' });
+      if (!res.ok && res.status !== 404) throw new Error();   // 404 = 이미 다른 기기에서 지워짐
+      vocabItems = vocabItems.filter(i => i.id !== item.id);
+      setVocabCount(vocabItems.length);
+      renderVocab();
+    } catch {
+      del.disabled = false; del.classList.remove('confirm'); del.innerHTML = TRASH_SVG;
+      toast('삭제하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    }
+  };
+  return card;
+}
+
+speak.cancelAll = () => { if (synth) synth.cancel(); if (speakingBtn) speakingBtn.classList.remove('speaking'); speakingBtn = null; };
+el.vocabQuery.oninput = renderVocab;
+
+/* ── 화면 전환 (#/ = 단어 찾기, #/vocab = 단어장) ── */
+function route() {
+  const view = location.hash === '#/vocab' ? 'vocab' : 'find';
+  document.body.dataset.view = view;
+  for (const [id, v] of [['tabFind', 'find'], ['tabVocab', 'vocab']]) {
+    const tab = $(id);
+    if (view === v) tab.setAttribute('aria-current', 'page'); else tab.removeAttribute('aria-current');
+  }
+  el.toast.classList.remove('show');
+  speak.cancelAll();
+  window.scrollTo({ top: 0 });
+  if (view === 'vocab') loadVocab();
+}
+window.addEventListener('hashchange', route);
+route();
+if (location.hash !== '#/vocab') loadVocab();   // 탭의 단어 개수 표시용
+
+// 예문 안에서 해당 단어만 강조 (텍스트 조각마다 이스케이프해서 XSS 방지)
+function markWord(sentence, word) {
+  if (!word) return esc(sentence);
+  const re = new RegExp(`(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'i');
+  return sentence.split(re).map((part, i) => i % 2 ? `<mark>${esc(part)}</mark>` : esc(part)).join('');
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s ?? '';
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
